@@ -14,12 +14,34 @@ class TodoListViewController: UITableViewController {
     
     //MARK: Variables
     var arrayList = ["HOLA", "Q", "TAL"]
+    var dataAlert:String?
     
     //MARK: LifeCycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
     }
+    
+    //MARK: Action methods
+    @IBAction func btnAdd(_ sender: Any) {
+        
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            let array = [alert.textFields!]
+            print(array[2])
+        }
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+           
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
 extension TodoListViewController{
