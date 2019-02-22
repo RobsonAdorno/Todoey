@@ -11,6 +11,7 @@ import UIKit
 class TodoListViewController: UITableViewController {
     
     //MARK: Constants
+    let defaults = UserDefaults.standard
     
     //MARK: Variables
     var arrayList = ["HOLA", "Q", "TAL"]
@@ -20,25 +21,35 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    }
+        if let items = defaults.array(forKey: "TodoListArray") as? [String]{
+            arrayList = items
+        }
+    
+        }
     
     //MARK: Action methods
     @IBAction func btnAdd(_ sender: Any) {
         
+        var textField = UITextField()
+
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
-        
+
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
-            let array = [alert.textFields!]
-            print(array[2])
+
+            self.arrayList.append(textField.text!)
+            
+            self.defaults.set(self.arrayList, forKey: "TodoListArray")
+            
+            self.tableView.reloadData()
         }
-        
+
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
-           
+            textField = alertTextField
         }
-        
+
         alert.addAction(action)
-        
+
         present(alert, animated: true, completion: nil)
     }
     
