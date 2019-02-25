@@ -7,24 +7,22 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     
+    //MARK: Singleton Context
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     //MARK: Constants
     let defaults = UserDefaults.standard
     
     //MARK: Variables
-    var arrayList = ["HOLA", "Q", "TAL"]
+    var arrayList = [Item]()
     var dataAlert:String?
     
     //MARK: LifeCycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if let items = defaults.array(forKey: "TodoListArray") as? [String]{
-            arrayList = items
-        }
-    
         }
     
     //MARK: Action methods
@@ -36,11 +34,12 @@ class TodoListViewController: UITableViewController {
 
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
 
-            self.arrayList.append(textField.text!)
+         let newItem = Item(context: self.context)
+            newItem.title = textField.text!
+            newItem.done = false
             
-            self.defaults.set(self.arrayList, forKey: "TodoListArray")
+            self.saveItem()
             
-            self.tableView.reloadData()
         }
 
         alert.addTextField { (alertTextField) in
@@ -53,6 +52,17 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    //MARK: Save method
+    func saveItem(){
+        
+        do{
+            try context.save()
+        }catch let error as NSError{
+            
+            print("Error to save context. Details: \(error)")
+        }
+        self.tableView.reloadData()
+    }
 }
 
 extension TodoListViewController{
@@ -63,7 +73,11 @@ extension TodoListViewController{
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cellOne", for: indexPath)
         
-        cell.textLabel?.text = arrayList[indexPath.row]
+        let item = arrayList[indexPath.row]
+        
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
     }
@@ -76,12 +90,9 @@ extension TodoListViewController{
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+       arrayList[indexPath.row].done = !arrayList[indexPath.row].done
+        
+        tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
