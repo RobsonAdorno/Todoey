@@ -23,6 +23,8 @@ class TodoListViewController: UITableViewController {
     //MARK: LifeCycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         }
     
     //MARK: Action methods
